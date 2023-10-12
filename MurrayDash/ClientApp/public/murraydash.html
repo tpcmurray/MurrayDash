@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>MurrayDash</title>
+    <link rel="stylesheet" href="MurrayDash.css" /> 
+</head>
+<body>
+    <script type="text/javascript" charset="utf-8">
+
+        function time() {
+            var d = new Date();
+
+            let optionsTime = {
+                hour: "numeric", minute: "2-digit", second: "2-digit"
+            };
+            document.getElementById('clockyTime').innerHTML = d.toLocaleTimeString("en-us", optionsTime);
+
+            let optionsDate = {
+                weekday: "long", year: "numeric", month: "short", day: "numeric"
+            };
+            document.getElementById('clockyDate').innerHTML = d.toLocaleDateString("en-us", optionsDate);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            time();
+            setInterval(time, 1000);
+        });
+    </script>
+    <div class="top-container">
+        <div class="top-left-container round-box">
+            <div id="clockyTime" class="time-title" style="color: #dddddd;">Time</div>
+            <div id="clockyDate" class="box-title" style="color: #dddddd;">Date</div>
+            <div><img src="weather-sunny-with-raining-periods.png" /></div>
+        </div>
+        <div class="top-center-container round-box">
+            <div class="box-title" style="color: #dddddd;">Meal Schedule</div>
+        </div>
+        <div class="top-right-container round-box">
+            <div class="box-title" style="color: #dddddd;">Chore Points</div>
+        </div>
+    </div>
+    <canvas id="cal-container" width="1920" height="550" style="background: #333333;"></canvas>
+
+    <script>
+
+        const c = document.getElementById("cal-container");
+        const ctx = c.getContext("2d");
+
+        let nowLine = 42;
+        let pixelsPerMin = 0.70;
+        let workableCalHeight = 472;
+        let hoursVisible = workableCalHeight / (pixelsPerMin * 60) - 1;
+
+        // colors
+        let colorTerry = "rgb(117, 117, 117)";
+        let colorNicole = "rgb(0, 132, 29)";
+        let colorFamily = "rgb(203, 113, 0)";
+        let colorAddison = "rgb(0, 59, 246)";
+        let colorSkylar = "rgb(185, 19, 70)";
+
+        class CalDraw {
+
+            getNextHour(h) {
+                h += 1;
+                if (h > 12) h -= 12;
+                return h;
+            }
+
+            drawNowLine() {
+                ctx.beginPath();
+                ctx.strokeStyle = "rgb(218, 218, 218)";
+                ctx.lineWidth = 2;
+                ctx.moveTo(9, nowLine - 2);
+                ctx.lineTo(1900, nowLine - 2);
+                ctx.stroke();
+            }
+
+            drawTimes() {
+                var d = new Date();
+                var y = nowLine + (60 - d.getMinutes()) * pixelsPerMin;
+                var h = d.getHours();
+                h = this.getNextHour(h);
+
+                for (var i = 0; i < hoursVisible; i++) {
+
+                    // line
+                    ctx.beginPath();
+                    ctx.strokeStyle = "rgb(95, 95, 95)";
+                    ctx.lineWidth = 1;
+                    ctx.moveTo(9, y);
+                    ctx.lineTo(1900, y);
+                    ctx.stroke();
+
+                    // text
+                    var x = 14;
+                    var hString = h < 10 ? ' ' + h : '' + h;
+                    for (var j = 0; j < 6; j++) {
+                        ctx.beginPath();
+                        ctx.font = '18px Helvetica';
+                        ctx.strokeStyle = "rgb(51, 51, 51)";
+                        ctx.fillStyle = "rgb(218, 218, 218)";
+                        ctx.lineWidth = 10;
+                        ctx.strokeText(hString, x, y + 5);
+                        ctx.fillText(hString, x, y + 5);
+                        x += 370;
+                    }
+
+                    h = this.getNextHour(h);
+                    y += 60 * pixelsPerMin;
+                }
+            }
+
+            drawRects() {
+                for (var i = 0; i < 5; i++) {
+                    this.drawRect(42 + i * 370);
+                }
+            }
+
+            drawRect(x) {
+                ctx.beginPath();
+                ctx.fillStyle = "rgb(69, 69, 69)";
+                ctx.roundRect(x, 5, 332, 507, 6);
+                ctx.fill();
+            }
+
+            drawHeader() {
+
+                // cover existing drawing overflow
+                ctx.beginPath();
+                ctx.fillStyle = "rgb(69, 69, 69)";
+                ctx.roundRect(10, nowLine - 37, 1896, 34, 6);
+                ctx.fill();
+
+                // colored family name headers
+                ctx.beginPath();
+                ctx.font = '28px Helvetica';
+
+                ctx.fillStyle = colorTerry;
+                ctx.fillText("Terry", 180, nowLine - 8);
+
+                ctx.fillStyle = colorNicole;
+                ctx.fillText("Nicole", 540, nowLine - 8);
+
+                ctx.fillStyle = colorFamily;
+                ctx.fillText("Family", 910, nowLine - 8);
+
+                ctx.fillStyle = colorAddison;
+                ctx.fillText("Addison", 1270, nowLine - 8);
+
+                ctx.fillStyle = colorSkylar;
+                ctx.fillText("Skylar", 1650, nowLine - 8);
+            }
+
+            drawEvent(x, color, startDate, endDate, summary) {
+                var now = new Date(); // current time is 'now' line
+
+                //                (  mins from now until event  )
+                var eventStartInMins = Math.ceil((startDate - now) / 60000);
+                var eventStartHoursOnly = Math.floor(eventStartInMins / 60);
+                var eventStartMinsOnly = eventStartInMins - (eventStartHoursOnly * 60);
+                var eventYStart = eventStartInMins * pixelsPerMin + nowLine;
+                var eventHeight = (endDate - startDate) / 60000 * pixelsPerMin;
+                ctx.beginPath();
+
+                // colored box
+                ctx.fillStyle = color;
+                ctx.fillRect(x, eventYStart, 332, eventHeight);
+                ctx.fill();
+
+                // summary text
+                ctx.beginPath();
+                ctx.font = 'bold 15px Helvetica';
+                ctx.fillStyle = "rgb(200, 200, 200)";
+                ctx.fillText(summary, x + 8, eventYStart + 17);
+
+                // start/stop times
+                let optionsTime = {
+                    hour: "numeric", minute: "2-digit"
+                };
+                var startTime = startDate.toLocaleTimeString("en-us", optionsTime);
+                var stopTime = endDate.toLocaleTimeString("en-us", optionsTime);
+                ctx.font = 'bold 13px Helvetica';
+                ctx.fillText(startTime + " - " + stopTime, x + 8, eventYStart + 35);
+
+                // mins before start
+                ctx.font = 'bold 20px Helvetica';
+                var remaining = eventStartHoursOnly > 0
+                    ? "in " + eventStartHoursOnly + "h " + eventStartMinsOnly + "m"
+                    : "in " + eventStartMinsOnly + "m";
+                ctx.fillText(remaining, x + 240, eventYStart + 28);
+                
+            }
+        }
+
+
+        function calendar() { 
+
+            let calDrawer = new CalDraw();
+            calDrawer.drawRects();
+            calDrawer.drawTimes();
+
+            // test events
+            calDrawer.drawEvent(42, colorTerry, new Date(2023, 9, 5, 22), new Date(2023, 9, 5, 23), "Haircut");
+            //calDrawer.drawEvent(1152, colorAddison, new Date(2023, 9, 5, 20, 30), new Date(2023, 9, 5, 21, 30), "Basketball");
+            calDrawer.drawEvent(1152, colorAddison, new Date(2023, 9, 6, 1, 30), new Date(2023, 9, 6, 2, 30), "Nice Dream");
+
+            calDrawer.drawNowLine();
+            calDrawer.drawHeader();
+        }
+
+        calendar();
+        setInterval(calendar, 1000);
+
+    </script>
+
+</body>
+</html>
