@@ -1,12 +1,15 @@
 ﻿body {
     background-color: #333333;
     color: #e3e3e3;
+    overflow-y: hidden; /* Hide vertical scrollbar */
+    overflow-x: hidden; /* Hide horizontal scrollbar */
 }
 
 .all {
     background-color: #333333;
     color: #e3e3e3;
     height: 1080px;
+    padding: 5px;
 }
 
 .grey {
@@ -87,22 +90,22 @@ span {
 }
 
 .top-left-container {
-    width: 725px;
-    height: 484px;
+    width: 748px;
+    height: 495px;
     float: left;
     display: table-cell;
 }
 
 .top-center-container {
-    width: 354px;
-    height: 484px;
+    width: 355px;
+    height: 495px;
     float: left;
     display: table-cell;
 }
 
 .top-right-container {
-    width: 725px;
-    height: 484px;
+    width: 750px;
+    height: 495px;
     float: left;
     display: table-cell;
 }
@@ -140,16 +143,16 @@ td.rightalign {
 #chore-progress-canvas {
     position: absolute;
     top: 90px;
-    left: 1160px;
+    left: 1200px;
     display: table-cell;
 }
 
 table.choreCalcs {
     position: absolute;
-    top: 75px;
-    left: 1300px;
+    top: 85px;
+    left: 1355px;
     display: table-cell;
-    font-size: 20pt;
+    font-size: 16pt;
     font-family: 'Helvetica LT Std', 'Lucida Sans', Geneva, Verdana, sans-serif;
 }
 

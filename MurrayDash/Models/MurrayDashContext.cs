@@ -113,6 +113,7 @@ public partial class MurrayDashContext : DbContext
             entity.Property(e => e.TotalPoints).HasColumnName("total_points");
             entity.Property(e => e.PercentComplete).HasColumnName("percent_complete");
             entity.Property(e => e.DailyAverage).HasColumnName("daily_average");
+            entity.Property(e => e.AverageLast7Days).HasColumnName("avg_last_7_days");
             entity.Property(e => e.DailyAvgNeeded).HasColumnName("daily_avg_needed");
             entity.Property(e => e.DaysAtCurrentRate).HasColumnName("days_at_current_rate");
             entity.Property(e => e.IsWinning).HasColumnName("is_winning");
